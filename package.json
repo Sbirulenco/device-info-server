@@ -1,0 +1,16 @@
+{
+  "name": "myservers",
+  "version": "1.0.0",
+  "description": "Device info report server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "express": "*",
+    "cors": "*"
+  }
+}
