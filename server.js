@@ -1,29 +1,28 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
-
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Enable CORS for all requests
-app.use(cors());
+app.use(cors()); // allow frontend requests
+app.use(express.json());
 
-// Serve static files (your frontend)
-app.use(express.static(path.join(__dirname)));
-
-// Example route: generate a device info report
-app.get("/report", (req, res) => {
-  const report = {
-    userAgent: req.headers["user-agent"],
-    platform: process.platform,
-    nodeVersion: process.version,
-    timestamp: new Date().toISOString(),
-  };
-
-  res.json(report);
+// Root test endpoint
+app.get("/", (req, res) => {
+  res.send("✅ Device Info Server is running");
 });
 
-// Start server
+// Report endpoint
+app.post("/report", (req, res) => {
+  // Example device info response
+  const report = {
+    os: req.headers["user-agent"] || "Unknown",
+    time: new Date().toISOString(),
+    ip: req.ip,
+  };
+
+  res.json(report); // IMPORTANT: always JSON, never HTML
+});
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
