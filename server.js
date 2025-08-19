@@ -1,27 +1,31 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
+const path = require("path");
+const os = require("os");
 
-// Allow requests from anywhere
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Root endpoint
+// Serve index.html and other static files
+app.use(express.static(path.join(__dirname)));
+
+// Root endpoint (optional)
 app.get("/", (req, res) => {
-  res.send("✅ Device Info Server is running");
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Report endpoint
+// /report endpoint
 app.post("/report", (req, res) => {
-  // Example detailed device info
   const report = {
     ip: req.ip,
     time: new Date().toISOString(),
     userAgent: req.headers["user-agent"] || "Unknown",
-    platform: process.platform,
-    cpuCores: require("os").cpus().length,
-    totalMemoryGB: Math.round(require("os").totalmem() / 1024 / 1024 / 1024),
-    freeMemoryGB: Math.round(require("os").freemem() / 1024 / 1024 / 1024),
+    platform: os.platform(),
+    cpuCores: os.cpus().length,
+    totalMemoryGB: Math.round(os.totalmem() / 1024 / 1024 / 1024),
+    freeMemoryGB: Math.round(os.freemem() / 1024 / 1024 / 1024),
+    // Client-sent data
     screen: req.body.screen || "Not provided",
     gpu: req.body.gpu || "Not provided",
     battery: req.body.battery || "Not provided",
