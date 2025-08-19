@@ -2,24 +2,25 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
+// Middleware
 app.use(cors()); // allow frontend requests
 app.use(express.json());
 
-// Root test endpoint
+// Root route (optional)
 app.get("/", (req, res) => {
   res.send("✅ Device Info Server is running");
 });
 
-// Report endpoint
+// Report endpoint (must match your fetch URL)
 app.post("/report", (req, res) => {
-  // Example device info response
   const report = {
-    os: req.headers["user-agent"] || "Unknown",
+    userAgent: req.headers["user-agent"] || "Unknown",
+    platform: process.platform,
     time: new Date().toISOString(),
-    ip: req.ip,
+    ip: req.ip
   };
 
-  res.json(report); // IMPORTANT: always JSON, never HTML
+  res.json(report); // MUST return JSON
 });
 
 const PORT = process.env.PORT || 3000;
