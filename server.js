@@ -1,39 +1,29 @@
-const express = require('express');
-const fs = require('fs');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Enable CORS for all requests
 app.use(cors());
-app.use(express.json());
-app.use(express.static('.'));
 
-// POST endpoint to log data
-app.post('/log', (req, res) => {
-  const data = req.body;
+// Serve static files (your frontend)
+app.use(express.static(path.join(__dirname)));
 
-  // Get user IP
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  data.ip = ip;
+// Example route: generate a device info report
+app.get("/report", (req, res) => {
+  const report = {
+    userAgent: req.headers["user-agent"],
+    platform: process.platform,
+    nodeVersion: process.version,
+    timestamp: new Date().toISOString(),
+  };
 
-  console.log("Received data:", data);
-
-  const logFile = 'logs.json';
-  let logs = [];
-  if (fs.existsSync(logFile)) {
-    try { logs = JSON.parse(fs.readFileSync(logFile)); } 
-    catch(err){ console.error("Error reading logs.json:", err); }
-  }
-  logs.push(data);
-  fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
-
-  res.json({ ok: true });
+  res.json(report);
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
